@@ -9,20 +9,20 @@ const router = (app) => {
   app.get('/page4', controllers.page4);
 
   // READ
-  app.get('/getName', controllers.getCatName);
+  app.get('/getCatName', controllers.getCatName);
   app.get('/getDogName', controllers.getDogName);
-  app.get('/findByName', controllers.searchCatName);
+  app.get('/findCatByName', controllers.searchCatName);
   app.post('/findDogByName', controllers.searchDogName);
 
   // POST requests.
 
   // CREATE
-  app.post('/setName', controllers.setCatName);
+  app.post('/setCatName', controllers.setCatName);
   app.post('/setDogName', controllers.setDogName);
 
   // UPDATE
-  app.post('/updateLast', controllers.updateLastCat);
-  app.post('/updateAge', controllers.updateLastDog);
+  app.post('/updateLastCat', controllers.updateLastCat);
+  app.post('/updateAge', controllers.searchByNameAndUpdateAge);
   
   // Index.
   app.get('/', controllers.index);
