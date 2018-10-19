@@ -18,7 +18,7 @@ const CatSchema = new mongoose.Schema({
     required: true,
   },
 
-  createdData: {
+  createdDate: {
     type: Date,
     default: Date.now,
   },
