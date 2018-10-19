@@ -23,7 +23,7 @@ const router = (app) => {
   // UPDATE
   app.post('/updateLastCat', controllers.updateLastCat);
   app.post('/updateAge', controllers.searchByNameAndUpdateAge);
-  
+
   // Index.
   app.get('/', controllers.index);
   app.get('/*', controllers.notFound);

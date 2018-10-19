@@ -21,7 +21,7 @@ const defaultData = {
 // object for us to keep track of the last Cat we made and dynamically update it sometimes
 const lastAdded = {
   cat: new Cat(defaultData.cat),
-  dog: new Dog(defaultData.dog)
+  dog: new Dog(defaultData.dog),
 };
 
 // READ methods.
@@ -138,7 +138,7 @@ const searchCatName = (req, res) => {
     }
 
     if (!doc) {
-      return res.json({ error: 'No cats with name `' + req.query.name + '` found' });
+      return res.json({ error: `No cats with name \`${req.query.name}\` found` });
     }
 
     return res.json({ name: doc.name, beds: doc.bedsOwned });
@@ -156,7 +156,7 @@ const searchDogName = (req, res) => {
     }
 
     if (!doc) {
-      return res.json({ error: 'No dogs with name `' + req.query.name + '` found' });
+      return res.json({ error: `No dogs with name \`${req.query.name}\` found` });
     }
 
     return res.json({ name: doc.name, breed: doc.breed, age: doc.age });
@@ -166,7 +166,7 @@ const searchDogName = (req, res) => {
 // UPDATE
 // CAT
 const updateLastCat = (req, res) => {
-  if(lastAdded.cat.name === "unknown") {
+  if (lastAdded.cat.name === 'unknown') {
     return res.status(400).json({ error: 'Last updated cat is unknown.' });
   }
 
@@ -180,6 +180,8 @@ const updateLastCat = (req, res) => {
   }));
 
   savePromise.catch(err => res.json({ err }));
+
+  return res;
 };
 // DOG
 const searchByNameAndUpdateAge = (req, res) => {
@@ -188,37 +190,30 @@ const searchByNameAndUpdateAge = (req, res) => {
     return res.status(400).json({ error: 'Name is a required field.' });
   }
 
-  const update = (req, res, dog) => {
-    if(!dog) {
-      return res.json({ error: 'No dog passed.' });
-    }
-
-    dog.age++;
-
-    const savePromise = dog.save();
-
-    savePromise.then(() => res.json({
-      name: dog.name,
-      breed: dog.breed,
-      age: dog.age
-    }));
-
-    savePromise.catch(err => res.json({ err }));
+  const updateCallback = (err, doc) => {
+    if (err) { return res.json({ err }); }
+    if (!doc) { return res.json({ error: `No dog with name \`${req.body.name}\` found.` }); }
+    return res.json({
+      name: doc.name,
+      breed: doc.breed,
+      age: doc.age,
+    });
   };
 
-  const callback = (err, doc) => {
-    if(err) {
-      return res.json({ err }); // if error, return it.
+  const queryCallback = (err, doc) => {
+    if (err) { return res.json({ err }); }
+    if (!doc) { return res.json({ error: `No dog with name \`${req.body.name}\` found.` }); }
+
+    const updateDog = {
+      age: doc.age,
     };
 
-    if(!doc) {
-      return res.json({ error: 'No dogs with name `' + req.body.name + '` found' });
-    };
-    
-    return update(req, res, doc);
+    updateDog.age++;
+
+    return Dog.findByNameAndUpdate(req.body.name, updateDog, updateCallback);
   };
 
-  Dog.findByName(req.body.name, callback);
+  return Dog.findByName(req.body.name, queryCallback);
 };
 
 // NOT FOUND.
@@ -258,9 +253,9 @@ const hostPage3 = (req, res) => {
 // PAGE 4 - Show all dogs.
 const hostPage4 = (req, res) => {
   const callback = (err, docs) => {
-    if(err) {
+    if (err) {
       return res.json({ err }); // if error, return it.
-    };
+    }
     return res.render('page4', { dogs: docs }); // Set the dogs as the response from the readAllDogs method.
   };
   readAllDogs(req, res, callback);
